@@ -36,7 +36,7 @@ const loginAuthor= async function(req,res){
 
     //Checks if the email or password is correct
     let checkCred= await authormodel.findOne({email: userEmail,password:userPassword})
-    if(!checkCred) return res.status(400).send({status:false, msg:"Email or password is incorrect"})
+    if(!checkCred) return res.status(401).send({status:false, msg:"Email or password is incorrect"})
 
     //Creating token if e-mail and password is correct
     let token= jwt.sign({

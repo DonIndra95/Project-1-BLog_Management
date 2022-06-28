@@ -66,7 +66,7 @@ const authorValidations = async function (req, res, next) {
 
     let duplicateEmail = await authormodel.find({ email: email });
 
-    if (duplicateEmail.length !== 0)return res.status(400).send({ status: false, msg: "Email already exists" });
+    if (duplicateEmail.length !== 0)return res.status(400).send({ status: false, msg: `${email} already exists` });
 
     next();
     

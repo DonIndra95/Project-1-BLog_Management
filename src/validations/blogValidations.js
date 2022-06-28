@@ -139,6 +139,12 @@ const updateValidations = async function (req, res, next) {
             msg: "The body should contain at least 10 characters",
           });
     }
+    if (data.isPublished) {
+      if (typeof data.isPublished !== "boolean")
+        return res
+          .status(400)
+          .send({ status: false, msg: " Please enter isPublished as Boolean" });
+    }
 
     next();
   } catch (error) {

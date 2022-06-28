@@ -9,12 +9,12 @@ const authentication = async function (req, res, next) {
 
     if (!token) return res.status(400).send({ status: false, msg: "Enter token in header" });
 
-    jwt.verify(token,"project1-AADI",function(error){
+    jwt.verify(token,"project1-AADI",function(error,decoded){
 
       if(error)return res.status(401).send({ status: false, msg: "Invalid Token" });
 
       else 
-
+      req.authorId = decoded.authorId;
       next()
    });   
   } catch (error) {
@@ -25,12 +25,6 @@ const authentication = async function (req, res, next) {
 const authorization = async function (req, res, next) {
   try {
 
-    let token = req.headers["x-api-key"];
-
-    let decodedToken = jwt.verify(token,"project1-AADI");
-
-    req.authorId = decodedToken.authorId; // assigning decoded token authorId value to authorId key in request
-
     let blogId = req.params.blogId;
     
     if(blogId){
@@ -39,8 +33,7 @@ const authorization = async function (req, res, next) {
 
       let findBlog = await blogsmodel.findById(blogId);
       if (findBlog) {
-        if (decodedToken.authorId != findBlog.authorId)return res.status(403).send({ status: false, msg:"Author is not authorized to access this data"});
-        req.blogId = blogId;
+        if (req.authorId != findBlog.authorId)return res.status(403).send({ status: false, msg:"Author is not authorized to access this data"});
       }
     }
 
