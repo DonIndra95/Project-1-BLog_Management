@@ -30,7 +30,7 @@ const getBlogs = async function (req, res) {
 
     // Fetching the blogs
     let blogs = await blogsmodel.find({$and: [conditions, { isDeleted: false }, { isPublished: true }]});
-
+    // Checking if no blogs were found
     if (blogs.length == 0)return res.status(404).send({ status: false, msg: "No Blogs found" });
 
     res.status(200).send({ status: true, data: blogs });
@@ -64,7 +64,7 @@ const putBlogs = async function (req, res) {
       },
       { new: true }
     );
-
+     // Checking if no blogs were found
     if(!updatedBlog) return res.status(404).send({status:false,msg:"No blogs found"})
 
     res.status(200).send({ status: true, data: updatedBlog });
@@ -85,9 +85,11 @@ const deleteBlogs = async function (req, res) {
       { _id: blogId, isDeleted: false },
       { $set: { isDeleted: true, deletedAt: Date.now() } }
     );
+     // Checking if no blogs were found
     if (!blog) {
       return res.status(404).send({ status: false, msg: "Blog Not Found" });
     }
+    //On successfull deletion of blog
     res.status(200).send({ status: true, msg: "Document is deleted" });
   } catch (error) {
     console.log(error);
@@ -102,25 +104,28 @@ const deleteBlogsByQuery = async function (req, res) {
     let conditions = req.query;
     //Checks whether query params is empty or not
     if (Object.keys(conditions).length == 0)  return res.status(400).send({ status: false, msg: "Query Params cannot be empty" });
+    //Creating a dynamic object
     let filters = {
       isDeleted:false,
       authorId:req.authorId,
       isPublished:false
     }
+    // Checking if authorId is present and is authorized
       if(conditions.authorId) {
         if(conditions.authorId != req.authorId) return res.status(403).send({ status: false, msg: "Author is not authorized to access this data"})      
       }
-
+       // Assigning conditions to our dynamic object
       if(conditions.category)filters.category={$in:conditions.category};
       if(conditions.tags) filters.tags={$all:conditions.tags};
       if(conditions.subcategory) filters.subcategory={$all:conditions.subcategory};
   
 
       console.log(filters)
-     
-    let deleteBlogs = await blogsmodel.updateMany(filters,{ $set: { isDeleted: true, deletedAt: Date.now()}});   
-    //let deleteBlogs= await blogsmodel.updateMany({isDeleted:true},{$set:{isDeleted:false,deletedAt:null}})
+     //Deleting the blog which fulfills the conditions
+    let deleteBlogs = await blogsmodel.updateMany(filters,{ $set: { isDeleted: true, deletedAt: Date.now()}}); 
+    
     console.log(deleteBlogs);
+    //Checking if no blogs were found to delete
     if (deleteBlogs.matchedCount == 0) {
       return res.status(404).send({ status: false, msg: "Blog Not Found" });
     }
