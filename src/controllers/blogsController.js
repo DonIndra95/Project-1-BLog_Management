@@ -83,7 +83,7 @@ const deleteBlogs = async function (req, res) {
     //Deleting blog and adding timestamp
     let blog = await blogsmodel.findOneAndUpdate(
       { _id: blogId, isDeleted: false },
-      { $set: { isDeleted: true, deletedAt: Date.now() } }
+      { isDeleted: true, deletedAt: Date.now() }
     );
      // Checking if no blogs were found
     if (!blog) {

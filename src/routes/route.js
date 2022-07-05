@@ -18,6 +18,6 @@ router.put("/blogs/:blogId",blogValidations.updateValidations,middleware.authent
 
 router.delete("/blogs/:blogId", middleware.authentication,middleware.authorization,blogController.deleteBlogs);
 
-router.delete("/blogs", middleware.authentication,middleware.authorization,blogController.deleteBlogsByQuery);
+router.delete("/blogs", middleware.authentication,blogController.deleteBlogsByQuery);
 
 module.exports = router;
